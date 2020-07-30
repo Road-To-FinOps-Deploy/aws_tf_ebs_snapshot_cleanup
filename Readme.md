@@ -24,7 +24,7 @@ module "aws_ebs_cleanup" {
 | snapshot\_cleanup\_cron | Rate expression for when to run the review of snaps| string | `"cron(0 0 ? * * *)"` | no 
 | function\_prefix | Prefix for the name of the lambda created | string | `""` | no |
 | time\_interval| how many days a volumes needs to be unattached to delete| string | `"7"` | no |
-| DryRun| True or false for if you want the lambda to delete the snaps| string | `"FALSE"` | no |
+| DryRun| True or false for if you want the lambda to delete the snaps| string | `"false"` | no |
 
 ## Testing 
 
