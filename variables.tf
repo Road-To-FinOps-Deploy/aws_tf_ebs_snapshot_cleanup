@@ -16,5 +16,5 @@ variable "time_interval" {
 variable "DryRun" {
   default     = false
   description = "True or false for if you want the lambda to delete the snaps"
-  type  = bool 
+  type        = bool
 }
