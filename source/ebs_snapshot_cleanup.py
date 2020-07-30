@@ -9,14 +9,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 ec2 = boto3.client('ec2', 'eu-west-1')
 account_id = os.environ['ACCOUNT_ID']
-
+time_interval = int(os.environ['TIME_INTERVAL'])
+DryRun = os.environ['DRYRUN']
 
 def lambda_handler(event, context):
-
+    
     response = ec2.describe_snapshots(
         OwnerIds=[account_id]
     )
-    delete(response, 10, ec2)
+    
+    delete(response, time_interval, ec2)
 
 def delete(response, time_interval, ec2_client):
     for snapshot in response['Snapshots']:
@@ -25,7 +27,8 @@ def delete(response, time_interval, ec2_client):
         if len(time_difference) > 1 and int(time_difference[0]) >= time_interval:
             try:
                 logger.info('Deleting snapshot - {0}'.format(snapshot['SnapshotId']))
-                output = ec2_client.delete_snapshot(SnapshotId=snapshot['SnapshotId'],   DryRun=False)
+                output = ec2_client.delete_snapshot(SnapshotId=snapshot['SnapshotId'],   DryRun=DryRun)
+                logger.info(f"{output}")
                 logger.info('Snapshot {0} has been successfully deleted'.format(snapshot['SnapshotId']))
             except:
                 logger.error('Snapshot {0} could not be deleted'.format(snapshot['SnapshotId']))

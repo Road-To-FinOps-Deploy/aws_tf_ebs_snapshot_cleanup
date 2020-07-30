@@ -45,23 +45,24 @@ data "aws_iam_policy_document" "log_policy" {
 }
 
 resource "aws_iam_policy" "log_policy" {
-  name   = "ebs_lambda_role"
+  name   = "${var.function_prefix}log_policy"
   path   = "/"
-  policy = "${data.aws_iam_policy_document.log_policy.json}"
+  policy = data.aws_iam_policy_document.log_policy.json
 }
 
 resource "aws_iam_role" "ebs_lambda_role" {
-  name               = "ebs_lambda_role"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  name               = "${var.function_prefix}ebs_lambda_role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 resource "aws_iam_policy_attachment" "log_policy_attachment" {
   name       = "cloudwatch-policy-attachment"
-  policy_arn = "${aws_iam_policy.log_policy.arn}"
-  roles      = ["${aws_iam_role.ebs_lambda_role.name}"]
+  policy_arn = aws_iam_policy.log_policy.arn
+  roles      = [aws_iam_role.ebs_lambda_role.name]
 }
 
 resource "aws_iam_instance_profile" "lambda_profile" {
-  name = "ebs_lambda_role"
-  role = "${aws_iam_role.ebs_lambda_role.name}"
+  name = "${var.function_prefix}lambda_profile"
+  role = aws_iam_role.ebs_lambda_role.name
 }
+
