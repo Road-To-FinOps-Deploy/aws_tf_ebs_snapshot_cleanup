@@ -9,16 +9,18 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 ec2 = boto3.client('ec2', 'eu-west-1')
 account_id = os.environ['ACCOUNT_ID']
-
+time_interval = os.environ['TIME_INTERVAL']
 
 def lambda_handler(event, context):
 
     response = ec2.describe_snapshots(
         OwnerIds=[account_id]
     )
-    delete(response, 10, ec2)
+    
+    delete(response, time_interval, ec2)
 
 def delete(response, time_interval, ec2_client):
+    import pdb; pdb.set_trace()
     for snapshot in response['Snapshots']:
         time_difference = str(datetime.datetime.now() - snapshot['StartTime'].replace(tzinfo=None)).split(' ')
         logger.info('Age of snapshot {0} is {1} days old'.format(snapshot['SnapshotId'], time_difference[0]))
