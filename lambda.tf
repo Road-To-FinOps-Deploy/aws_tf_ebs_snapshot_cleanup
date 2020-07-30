@@ -1,15 +1,17 @@
 resource "aws_lambda_function" "build_lambda" {
   filename         = "${path.module}/source/ebs_snapshot_cleanup.zip"
-  function_name    = "${var.function_prefix}ebs_clean_weekly"
+  function_name    = "${var.function_prefix}ebs_snapshot_clean_weekly"
   role             = aws_iam_role.ebs_lambda_role.arn
   handler          = "ebs_snapshot_cleanup.lambda_handler"
   source_code_hash = data.archive_file.ebs_clean_zip.output_base64sha256
-  runtime          = "python2.7"
+  runtime          = "python3.7"
   timeout          = "30"
 
   environment {
     variables = {
-      ACCOUNT_ID = data.aws_caller_identity.current.id
+      ACCOUNT_ID    = data.aws_caller_identity.current.account_id
+      TIME_INTERVAL = var.time_interval
+      DRYRUN        = var.DryRun
     }
   }
 }
